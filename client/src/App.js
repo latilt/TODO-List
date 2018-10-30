@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, List } from 'semantic-ui-react';
+import { Form, Button, List } from 'semantic-ui-react';
 import './App.css';
 
 const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: 11.5},
@@ -9,13 +9,41 @@ const temp = [{title: "오늘의 할일", content: "내일의 할일", done: fal
 class App extends Component {
 
   // title : string, content : string, done : bool, deadline : date,
-  state = { lists : temp}
+  state = { lists : temp, title: '', content: ''}
+
+  // Lists 추가
+  handleSubmit = () => {
+    const { lists, title, content } = this.state;
+    
+    lists.push({title, content, done: false, deadline: 11.20});
+    console.log("Submit", lists, title, content);
+    this.setState({
+      lists: lists, title: '', content: ''
+    });
+  }
+
+  // title, content 입력
+  handleChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  }
 
   render() {
-    const { lists } = this.state;
+    const { lists, title, content } = this.state;
 
     return (
       <div className="App">
+        <Form size="massive" onSubmit={this.handleSubmit}>
+          <Form.Field>
+            <label>제목</label>
+            <Form.Input placeholder='Title...' name='title' value={title} onChange={this.handleChange} />
+          </Form.Field>
+          <Form.Field>
+            <label>내용</label>
+            <Form.Input placeholder='Content...' name='content' value={content} onChange={this.handleChange} />
+          </Form.Field>
+          <Button type='submit'>submit</Button>
+        </Form>
+
         <List celled size="massive">
           {lists.map((list, index) => 
             <List.Item key={index}>
