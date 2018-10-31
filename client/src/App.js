@@ -16,7 +16,6 @@ class App extends Component {
     const { lists, title, content } = this.state;
     
     lists.push({title, content, done: false, deadline: 11.20});
-    console.log("Submit", lists, title, content);
     this.setState({
       lists: lists, title: '', content: ''
     });
@@ -25,6 +24,16 @@ class App extends Component {
   // title, content 입력
   handleChange = (e, { name, value }) => {
     this.setState({ [name]: value });
+  }
+
+  // list 삭제
+  clickDelete = (index, e) => {
+    const { lists } = this.state;
+
+    lists.splice(index, 1);
+    this.setState({
+      lists: lists
+    });
   }
 
   render() {
@@ -47,7 +56,10 @@ class App extends Component {
         <List celled size="massive">
           {lists.map((list, index) => 
             <List.Item key={index}>
-              <List.Header>{list.title}</List.Header>
+              <List.Header>
+                {list.title}
+                <Button floated='right' onClick={this.clickDelete.bind(this, index)}>DEL</Button>
+              </List.Header>
               <List.Content>{list.content}</List.Content>
             </List.Item>  
           )}

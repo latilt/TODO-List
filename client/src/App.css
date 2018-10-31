@@ -7,6 +7,8 @@
 .ui.list>.item .header {
   padding-bottom: 5px;
   border-bottom: 1px solid;
+  height: 50px;
+  line-height: 50px
 }
 
 .ui.list>.item>.content {
