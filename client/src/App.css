@@ -14,3 +14,7 @@
 .ui.list>.item>.content {
   padding-top: 5px;
 }
+
+.ui.list>.item.done {
+  text-decoration: line-through;
+}

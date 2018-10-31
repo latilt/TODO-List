@@ -36,6 +36,16 @@ class App extends Component {
     });
   }
 
+  // list 완료 처리
+  clickDone = (index, e) => {
+    const { lists } = this.state;
+
+    lists[index].done ? lists[index].done = false : lists[index].done = true;
+    this.setState({
+      lists: lists
+    });
+  }
+
   render() {
     const { lists, title, content } = this.state;
 
@@ -55,10 +65,11 @@ class App extends Component {
 
         <List celled size="massive">
           {lists.map((list, index) => 
-            <List.Item key={index}>
+            <List.Item key={index} className={list.done ? 'done' : ''}>
               <List.Header>
                 {list.title}
                 <Button floated='right' onClick={this.clickDelete.bind(this, index)}>DEL</Button>
+                <Button floated='right' onClick={this.clickDone.bind(this, index)}>Done</Button>
               </List.Header>
               <List.Content>{list.content}</List.Content>
             </List.Item>  
