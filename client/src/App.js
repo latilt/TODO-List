@@ -66,9 +66,9 @@ class App extends Component {
     this.setState({
       lists: lists
     });
-    
   }
   
+  // 마감 기한 토글
   toggleCheck = () => {
     this.setState({ dateBool: !this.state.dateBool });
   }
@@ -76,9 +76,26 @@ class App extends Component {
     this.setState({ editDateBool: !this.state.editDateBool });
   }
 
+  // 마감 기한 계산 (일)
+  calculateDate = (deadline) => {
+    let today = new Date();
+    let day = new Date(deadline);
+    let gap = today.getTime() - day.getTime();
+    gap = Math.floor(gap / (1000 * 60 * 60 * 24));
+
+    if(isNaN(gap)) {
+      return "";
+    }
+    if(gap > 0) {
+      return gap + "일 지났습니다.";
+    } else {
+      return -gap + "일 남았습니다.";
+    }
+  }
 
   render() {
     const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool } = this.state;
+    let d;
 
     return (
       <div className="App">
@@ -92,9 +109,9 @@ class App extends Component {
             <Form.Input placeholder='Content...' name='content' value={content} onChange={this.handleChange} />
           </Form.Field>
           <Form.Field>
-            <Checkbox toggle onChange={this.toggleCheck} checked={!dateBool} />
             <label>기한</label>
-            <Form.Input disabled={dateBool} placeholder='2018-11-01' name='date' value={date} onChange={this.handleChange} />
+            <Checkbox toggle onChange={this.toggleCheck} checked={!dateBool} />
+            <Form.Input disabled={dateBool} type='date' name='date' value={date} onChange={this.handleChange} />
           </Form.Field>
           <Button type='submit'>submit</Button>
           
@@ -105,6 +122,7 @@ class App extends Component {
             <List.Item key={index} className={list.done ? 'done' : ''}>
               <List.Header>
                 {list.title}
+                {this.calculateDate(list.deadline)}
                 <Modal 
                   trigger={<Button floated='right' onClick={this.clickEdit.bind(this, list)}>Edit</Button>}
                   closeIcon
@@ -123,7 +141,7 @@ class App extends Component {
                       <Form.Field>
                         <Checkbox toggle onChange={this.toggleCheckEdit} checked={!editDateBool} />
                         <label>기한</label>
-                        <Form.Input disabled={editDateBool} placeholder='2018-11-01' name='editDate' value={editDate} onChange={this.handleChange} />
+                        <Form.Input disabled={editDateBool} type='date' name='editDate' value={editDate} onChange={this.handleChange} />
                       </Form.Field>
                       <Button type='submit'>Edit</Button>
                     </Form>
