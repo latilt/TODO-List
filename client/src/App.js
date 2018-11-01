@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
-import { Form, Button, List, Modal } from 'semantic-ui-react';
+import { Input, Form, Button, List, Modal, Checkbox } from 'semantic-ui-react';
 import './App.css';
 
-const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: 11.5},
-              {title: "title2", content: "content2", done: false, deadline: 11.5},
-              {title: "title3", content: "content3", done: false, deadline: 11.5}];
+const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: "2018-10-01"},
+              {title: "title2", content: "content2", done: false, deadline: "2018-10-15"},
+              {title: "title3", content: "content3", done: false, deadline: "2018-10-20"}];
 
 class App extends Component {
 
   // title : string, content : string, done : bool, deadline : date,
-  state = { lists : temp, title: '', content: '', editTitle: '', editContent: ''}
+  state = { lists : temp, title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true}
 
   // Lists 추가
   handleSubmit = () => {
-    const { lists, title, content } = this.state;
+    const { lists, title, content, date, dateBool } = this.state;
     
-    lists.push({title, content, done: false, deadline: 11.20});
+    lists.push({title, content, done: false, deadline: dateBool ? "" : date});
     this.setState({
-      lists: lists, title: '', content: ''
+      lists: lists, title: '', content: '', date: '', dateBool: true
     });
+    console.log(lists);
   }
 
   // title, content 입력
@@ -27,7 +28,7 @@ class App extends Component {
   }
 
   // list 삭제
-  clickDelete = (index, e) => {
+  clickDelete = (index) => {
     const { lists } = this.state;
 
     lists.splice(index, 1);
@@ -37,7 +38,7 @@ class App extends Component {
   }
 
   // list 완료 처리
-  clickDone = (index, e) => {
+  clickDone = (index) => {
     const { lists } = this.state;
 
     lists[index].done ? lists[index].done = false : lists[index].done = true;
@@ -47,27 +48,37 @@ class App extends Component {
   }
 
   // list 수정 버튼 클릭
-  clickEdit = (list) => {
+  clickEdit = ({ title, content, deadline}) => {
     this.setState({
-      editTitle: list.title,
-      editContent: list.content
+      editTitle: title,
+      editContent: content,
+      editDate: deadline,
+      editDateBool: !deadline
     })
   }
   // list 수정
   handleEdit = (list) => {
-    const { lists, editTitle, editContent } = this.state;
+    const { lists, editTitle, editContent, editDate, editDateBool } = this.state;
     
     list.title = editTitle;
     list.content = editContent;
+    list.deadline = editDateBool ? "" : editDate;
     this.setState({
       lists: lists
     });
     
   }
-  handleClose = () => this.setState({ modalOpen: false })
+  
+  toggleCheck = () => {
+    this.setState({ dateBool: !this.state.dateBool });
+  }
+  toggleCheckEdit = () => {
+    this.setState({ editDateBool: !this.state.editDateBool });
+  }
+
 
   render() {
-    const { lists, title, content, editTitle, editContent } = this.state;
+    const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool } = this.state;
 
     return (
       <div className="App">
@@ -80,7 +91,13 @@ class App extends Component {
             <label>내용</label>
             <Form.Input placeholder='Content...' name='content' value={content} onChange={this.handleChange} />
           </Form.Field>
+          <Form.Field>
+            <Checkbox toggle onChange={this.toggleCheck} checked={!dateBool} />
+            <label>기한</label>
+            <Form.Input disabled={dateBool} placeholder='2018-11-01' name='date' value={date} onChange={this.handleChange} />
+          </Form.Field>
           <Button type='submit'>submit</Button>
+          
         </Form>
 
         <List celled size="massive">
@@ -102,6 +119,11 @@ class App extends Component {
                       <Form.Field>
                         <label>내용</label>
                         <Form.Input placeholder='Content...' name='editContent' value={editContent} onChange={this.handleChange} />
+                      </Form.Field>
+                      <Form.Field>
+                        <Checkbox toggle onChange={this.toggleCheckEdit} checked={!editDateBool} />
+                        <label>기한</label>
+                        <Form.Input disabled={editDateBool} placeholder='2018-11-01' name='editDate' value={editDate} onChange={this.handleChange} />
                       </Form.Field>
                       <Button type='submit'>Edit</Button>
                     </Form>
