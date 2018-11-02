@@ -1,25 +1,37 @@
 import React, { Component } from 'react';
-import { Input, Form, Button, List, Modal, Checkbox } from 'semantic-ui-react';
+import { Form, Button, List, Modal, Checkbox, Select, Message } from 'semantic-ui-react';
 import './App.css';
 
-const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: "2018-10-01"},
-              {title: "title2", content: "content2", done: false, deadline: "2018-10-15"},
-              {title: "title3", content: "content3", done: false, deadline: "2018-10-20"}];
+const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: "2018-11-05", priority: 1},
+              {title: "title2", content: "content2", done: false, deadline: "2018-11-02", priority: 2},
+              {title: "title3", content: "content3", done: false, deadline: "2018-10-20", priority: 3}];
+
+const selectTemp = [{key: 'basic', value: 'basic', text: '기본'},
+                    {key: 'title', value: 'title', text: '제목순'},
+                    {key: 'content', value: 'content', text: '내용순'},
+                    {key: 'done', value: 'done', text: '완료순'},
+                    {key: 'deadline', value: 'deadline', text: '남은일자순'}];
+// 기본:만든날짜, 제목순, 내용순, 완료순, 남은일자순
+
+const priorityList = [{key: 1, value: 1, text:'1 (Lowest)'},
+                  {key: 2, value: 2, text:'2 (Low)'},
+                  {key: 3, value: 3, text:'3 (Medium)'},
+                  {key: 4, value: 4, text:'4 (High)'},
+                  {key: 5, value: 5, text:'5 (Highest)'}]
 
 class App extends Component {
 
-  // title : string, content : string, done : bool, deadline : date,
-  state = { lists : temp, title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true}
+  // title : string, content : string, done : bool, deadline : date, priority: 1~5
+  state = { lists : temp, title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true, select: 'basic', priority: 3, editPriority: 0}
 
   // Lists 추가
   handleSubmit = () => {
-    const { lists, title, content, date, dateBool } = this.state;
+    const { lists, title, content, date, dateBool, priority } = this.state;
     
-    lists.push({title, content, done: false, deadline: dateBool ? "" : date});
+    lists.push({title, content, done: false, deadline: dateBool ? "" : date, priority: priority});
     this.setState({
-      lists: lists, title: '', content: '', date: '', dateBool: true
+      lists: lists, title: '', content: '', date: '', dateBool: true, priority: 3
     });
-    console.log(lists);
   }
 
   // title, content 입력
@@ -48,21 +60,23 @@ class App extends Component {
   }
 
   // list 수정 버튼 클릭
-  clickEdit = ({ title, content, deadline}) => {
+  clickEdit = ({ title, content, deadline, priority}) => {
     this.setState({
       editTitle: title,
       editContent: content,
       editDate: deadline,
-      editDateBool: !deadline
+      editDateBool: !deadline,
+      editPriority: priority
     })
   }
   // list 수정
   handleEdit = (list) => {
-    const { lists, editTitle, editContent, editDate, editDateBool } = this.state;
+    const { lists, editTitle, editContent, editDate, editDateBool, editPriority } = this.state;
     
     list.title = editTitle;
     list.content = editContent;
     list.deadline = editDateBool ? "" : editDate;
+    list.priority = editPriority;
     this.setState({
       lists: lists
     });
@@ -93,9 +107,69 @@ class App extends Component {
     }
   }
 
+  // 우선순위로 정렬
+  /*sortOption = (lists) => {
+    const { select } = this.state;
+
+    switch(select) {
+      case 'basic':
+      break;
+
+      case 'title':
+        lists.sort((a, b) => {
+          let titleA = a.title.toUpperCase();
+          let titleB = b.title.toUpperCase();
+          if(titleA < titleB) return -1;
+          if(titleA > titleB) return 1;
+          return 0;
+        });
+      break;
+
+      case 'content':
+        lists.sort((a, b) => {
+          let contentA = a.content.toUpperCase();
+          let contentB = b.content.toUpperCase();
+          if(contentA < contentB) return -1;
+          if(contentA > contentB) return 1;
+          return 0;
+        });
+      break;
+
+      case 'done':
+        lists.sort((a, b) => a.done - b.done)
+      break;
+
+      case 'deadline':
+       lists.sort((a, b) => {
+         let dateA = new Date(a.deadline);
+         let dateB = new Date(b.deadline);
+         return dateA.getTime() - dateB.getTime();
+       });
+       let index = lists.findIndex((val) => {
+        let today = new Date();
+        let date = new Date(val.deadline);
+        let gap = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+        return gap <= 0 ;
+       });
+       const before = lists.slice(0, index);
+       const after = lists.slice(index, lists.length);
+       return after.concat(before);
+      break;
+    }
+    return lists;
+  }*/
+
   render() {
-    const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool } = this.state;
-    let d;
+    const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool, select, priority, editPriority } = this.state;
+
+    const outDateList = lists.filter((list) => {
+      let today = new Date();
+      let day = new Date(list.deadline);
+      let gap = today.getTime() - day.getTime();
+      gap = Math.floor(gap / (1000 * 60 * 60 * 24));
+  
+      return gap > 0;
+    });
 
     return (
       <div className="App">
@@ -109,18 +183,23 @@ class App extends Component {
             <Form.Input placeholder='Content...' name='content' value={content} onChange={this.handleChange} />
           </Form.Field>
           <Form.Field>
+            <label>우선순위</label>
+            <Select options={priorityList} name='priority' value={priority} onChange={this.handleChange} selection />
+          </Form.Field>
+          <Form.Field>
             <label>기한</label>
             <Checkbox toggle onChange={this.toggleCheck} checked={!dateBool} />
             <Form.Input disabled={dateBool} type='date' name='date' value={date} onChange={this.handleChange} />
           </Form.Field>
           <Button type='submit'>submit</Button>
-          
+          {/* <Select options={selectTemp} name='select' value={select} onChange={this.handleChange} selection /> */}
         </Form>
 
         <List celled size="massive">
           {lists.map((list, index) => 
             <List.Item key={index} className={list.done ? 'done' : ''}>
               <List.Header>
+                [{list.priority}]
                 {list.title}
                 {this.calculateDate(list.deadline)}
                 <Modal 
@@ -143,6 +222,10 @@ class App extends Component {
                         <label>기한</label>
                         <Form.Input disabled={editDateBool} type='date' name='editDate' value={editDate} onChange={this.handleChange} />
                       </Form.Field>
+                      <Form.Field>
+                        <label>우선순위</label>
+                        <Select options={priorityList} name='editPriority' value={editPriority} onChange={this.handleChange} selection />
+                      </Form.Field>
                       <Button type='submit'>Edit</Button>
                     </Form>
                   </Modal.Content>
@@ -154,6 +237,15 @@ class App extends Component {
             </List.Item>  
           )}
         </List>
+        {outDateList.length ? 
+          <Message>
+            <Message.Header>마감기한이 지난 목록들이 있습니다.</Message.Header>
+            {outDateList.map((val, index) =>
+              <p key={index}>
+                {val.title}
+              </p>
+              )}
+          </Message> : ""}
       </div>
     );
   }
