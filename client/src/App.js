@@ -106,8 +106,17 @@ class App extends Component {
   // list 수정
   handleEdit = (index) => {
     const { lists, editTitle, editContent, editDate, editDateBool, editPriority } = this.state;
+    if(editTitle.length === 0) {
+      return console.log("바꿀 제목이 입력되지 않았습니다.");
+    }
+    if(editContent.length === 0) {
+      return console.log("바꿀 내용이 입력되지 않았습니다.");
+    }
+    if(!editDateBool && !editDate) {
+      return console.log("바꿀 기한이 입력되지 않았습니다.");
+    }
     const id = lists[index].id;
-    const data = {title: editTitle, content: editContent, deadline: editDateBool ? null : editDate, priority: editPriority};
+    const data = {title: editTitle, content: editContent, deadline: editDateBool ? null : editDate || null, priority: editPriority};
     this.putToDoLists(id, data)
       .then(res => res.json())
       .then(res => {
