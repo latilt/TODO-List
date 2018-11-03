@@ -1,14 +1,25 @@
-.App {
-  width: 500px;
-  margin: 0 auto;
+header {
+  height: 70px;
+  line-height: 70px;
+  font-size: 40px;
+  text-align: center;
   border: 1px solid;
+  box-sizing: border-box;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.App {
+  width: 800px;
+  margin: 0 auto;
+  padding: 10px 5px 0 5px;
 }
 
 .ui.list>.item .header {
-  padding-bottom: 5px;
+  padding-top: 5px;
   border-bottom: 1px solid;
   height: 50px;
-  line-height: 50px
+  line-height: 40px
 }
 
 .ui.list>.item>.content {
@@ -17,4 +28,26 @@
 
 .ui.list>.item.done {
   text-decoration: line-through;
+}
+.controller {
+  width: 48%;
+  float: left;
+  border: 1px solid;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 7px;
+  margin: 0 1%;
+}
+.screen {
+  width: 48%;
+  float: left;
+  border: 1px solid;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 7px;
+  margin: 0 1%;
+}
+
+.ui.form .field>label {
+  font-size: 15px;
 }
