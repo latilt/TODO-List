@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Form, Button, List, Modal, Checkbox, Select, Message } from 'semantic-ui-react';
 import './App.css';
-
-const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: "2018-11-05", priority: 1},
+/*
+const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: "2018-11-05", priority: 5},
               {title: "title2", content: "content2", done: false, deadline: "2018-11-02", priority: 2},
               {title: "title3", content: "content3", done: false, deadline: "2018-10-20", priority: 3}];
 
@@ -10,19 +10,28 @@ const selectTemp = [{key: 'basic', value: 'basic', text: '기본'},
                     {key: 'title', value: 'title', text: '제목순'},
                     {key: 'content', value: 'content', text: '내용순'},
                     {key: 'done', value: 'done', text: '완료순'},
-                    {key: 'deadline', value: 'deadline', text: '남은일자순'}];
+                    {key: 'deadline', value: 'deadline', text: '남은일자순'}];*/
 // 기본:만든날짜, 제목순, 내용순, 완료순, 남은일자순
-
-const priorityList = [{key: 1, value: 1, text:'1 (Lowest)'},
-                  {key: 2, value: 2, text:'2 (Low)'},
-                  {key: 3, value: 3, text:'3 (Medium)'},
-                  {key: 4, value: 4, text:'4 (High)'},
-                  {key: 5, value: 5, text:'5 (Highest)'}]
 
 class App extends Component {
 
   // title : string, content : string, done : bool, deadline : date, priority: 1~5
-  state = { lists : temp, title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true, select: 'basic', priority: 3, editPriority: 0}
+  state = { lists : [], title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true, select: 'basic', priority: 3, editPriority: 0}
+
+  priorityList = [{key: 1, value: 1, text:'1 (Lowest)'},
+                  {key: 2, value: 2, text:'2 (Low)'},
+                  {key: 3, value: 3, text:'3 (Medium)'},
+                  {key: 4, value: 4, text:'4 (High)'},
+                  {key: 5, value: 5, text:'5 (Highest)'}];
+
+  componentDidMount() {
+    this.getToDoLists();
+  }
+  getToDoLists = () => {
+    fetch('/api/todolists')
+      .then(res => res.json())
+      .then(todolists => {console.log(todolists); this.setState({lists: todolists})});
+  }
 
   // Lists 추가
   handleSubmit = () => {
@@ -64,7 +73,7 @@ class App extends Component {
     this.setState({
       editTitle: title,
       editContent: content,
-      editDate: deadline,
+      editDate: deadline.split("T", 1),
       editDateBool: !deadline,
       editPriority: priority
     })
@@ -184,7 +193,7 @@ class App extends Component {
           </Form.Field>
           <Form.Field>
             <label>우선순위</label>
-            <Select options={priorityList} name='priority' value={priority} onChange={this.handleChange} selection />
+            <Select options={this.priorityList} name='priority' value={priority} onChange={this.handleChange} selection />
           </Form.Field>
           <Form.Field>
             <label>기한</label>
@@ -224,7 +233,7 @@ class App extends Component {
                       </Form.Field>
                       <Form.Field>
                         <label>우선순위</label>
-                        <Select options={priorityList} name='editPriority' value={editPriority} onChange={this.handleChange} selection />
+                        <Select options={this.priorityList} name='editPriority' value={editPriority} onChange={this.handleChange} selection />
                       </Form.Field>
                       <Button type='submit'>Edit</Button>
                     </Form>
