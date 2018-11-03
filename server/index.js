@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -25,11 +26,31 @@ db.sequelize
 
 
 app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
 
 app.get('/api/todolists', (req, res) => {
     db.List.findAll().then(list => {
         res.json(list);
     })
+})
+
+app.post('/api/todolists', (req, res) => {
+    const data = req.body;
+    db.List.create(data)
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.json(err);
+        })
+})
+app.put('/api/todolists/:id', (req, res) => {
+
+})
+app.delete('/api/todolists/:id', (req, res) => {
+
 })
 app.get('*', (req, res) => {
     res.send("Hello World");

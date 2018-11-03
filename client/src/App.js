@@ -25,21 +25,40 @@ class App extends Component {
                   {key: 5, value: 5, text:'5 (Highest)'}];
 
   componentDidMount() {
+    console.log("DidMount");
     this.getToDoLists();
   }
+  // ToDoLists 가져오기
   getToDoLists = () => {
-    fetch('/api/todolists')
+    fetch('/api/todolists', {method: 'GET'})
       .then(res => res.json())
-      .then(todolists => {console.log(todolists); this.setState({lists: todolists})});
+      .then(todolists => this.setState({lists: todolists}));
+  }
+  // ToDoLists 입력
+  postToDoLists = (data) => {
+    return fetch('/api/todolists', {method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json'}});
+  }
+  // ToDoLists 변경
+  putToDoLists = () => {
+
+  }
+  // ToDoLists 삭제
+  deleteToDoLists = () => {
+    
   }
 
   // Lists 추가
   handleSubmit = () => {
     const { lists, title, content, date, dateBool, priority } = this.state;
-    
-    lists.push({title, content, done: false, deadline: dateBool ? "" : date, priority: priority});
-    this.setState({
-      lists: lists, title: '', content: '', date: '', dateBool: true, priority: 3
+    const data = {title, content, done: false, deadline: dateBool ? "" : date, priority};
+    this.postToDoLists(data)
+    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+      //lists.push(data);
+      this.setState({
+        lists: [...lists, res], title: '', content: '', date: '', dateBool: true, priority: 3
+      });
     });
   }
 
