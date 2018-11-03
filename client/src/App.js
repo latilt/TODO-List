@@ -25,7 +25,6 @@ class App extends Component {
                   {key: 5, value: 5, text:'5 (Highest)'}];
 
   componentDidMount() {
-    console.log("DidMount");
     this.getToDoLists();
   }
   // ToDoLists 가져오기
@@ -50,16 +49,14 @@ class App extends Component {
   // Lists 추가
   handleSubmit = () => {
     const { lists, title, content, date, dateBool, priority } = this.state;
-    const data = {title, content, done: false, deadline: dateBool ? "" : date, priority};
+    const data = {title, content, done: false, deadline: dateBool ? null : date, priority};
     this.postToDoLists(data)
-    .then(res => res.json())
-    .then(res => {
-      console.log(res);
-      //lists.push(data);
-      this.setState({
-        lists: [...lists, res], title: '', content: '', date: '', dateBool: true, priority: 3
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          lists: [...lists, res], title: '', content: '', date: '', dateBool: true, priority: 3
+        });
       });
-    });
   }
 
   // title, content 입력
@@ -74,13 +71,12 @@ class App extends Component {
     this.deleteToDoLists(id)
       .then(res => res.json())
       .then(res => {
-        console.log(res);
-        const newList = lists.slice();
+        const newList = [...lists];
         newList.splice(index, 1);
         this.setState({
           lists: newList
         });
-      })
+      });
   }
 
   // list 완료 처리
@@ -91,8 +87,7 @@ class App extends Component {
     this.putToDoLists(id, data)
       .then(res => res.json())
       .then(res => {
-        console.log(res);
-        const newList = lists.slice();
+        const newList = [...lists];
         newList[index].done = data.done;
         this.setState({
           lists: newList
@@ -101,26 +96,33 @@ class App extends Component {
   }
 
   // list 수정 버튼 클릭
-  clickEdit = ({ title, content, deadline, priority}) => {
+  clickEdit = ({ title, content, deadline, priority }) => {
     this.setState({
       editTitle: title,
       editContent: content,
-      editDate: deadline.split("T", 1),
+      editDate: deadline || "",
       editDateBool: !deadline,
       editPriority: priority
     })
   }
   // list 수정
-  handleEdit = (list) => {
+  handleEdit = (index) => {
     const { lists, editTitle, editContent, editDate, editDateBool, editPriority } = this.state;
-    
-    list.title = editTitle;
-    list.content = editContent;
-    list.deadline = editDateBool ? "" : editDate;
-    list.priority = editPriority;
-    this.setState({
-      lists: lists
-    });
+    const id = lists[index].id;
+    const data = {title: editTitle, content: editContent, deadline: editDateBool ? null : editDate, priority: editPriority};
+    this.putToDoLists(id, data)
+      .then(res => res.json())
+      .then(res => {
+        const newList = [...lists];
+        const list = newList[index];
+        list.title = editTitle;
+        list.content = editContent;
+        list.deadline = editDateBool ? null : editDate;
+        list.priority = editPriority;
+        this.setState({
+          lists: newList
+        });
+      });
   }
   
   // 마감 기한 토글
@@ -134,18 +136,20 @@ class App extends Component {
   // 마감 기한 계산 (일)
   calculateDate = (deadline) => {
     let today = new Date();
-    let day = new Date(deadline);
+    let day = new Date(deadline || "");
     let gap = today.getTime() - day.getTime();
     gap = Math.floor(gap / (1000 * 60 * 60 * 24));
 
-    if(isNaN(gap)) {
+    return gap;
+
+    /*if(isNaN(gap)) {
       return "";
     }
     if(gap > 0) {
       return gap + "일 지났습니다.";
     } else {
       return -gap + "일 남았습니다.";
-    }
+    }*/
   }
 
   // 우선순위로 정렬
@@ -202,12 +206,13 @@ class App extends Component {
 
   render() {
     const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool, select, priority, editPriority } = this.state;
-
+    let day;
     const outDateList = lists.filter((list) => {
-      let today = new Date();
-      let day = new Date(list.deadline);
+      /*let today = new Date();
+      let day = new Date(list.deadline || "");
       let gap = today.getTime() - day.getTime();
-      gap = Math.floor(gap / (1000 * 60 * 60 * 24));
+      gap = Math.floor(gap / (1000 * 60 * 60 * 24));*/
+      const gap = this.calculateDate(list.deadline);
   
       return gap > 0;
     });
@@ -242,14 +247,14 @@ class App extends Component {
               <List.Header>
                 [{list.priority}]
                 {list.title}
-                {this.calculateDate(list.deadline)}
+                {isNaN(day = this.calculateDate(list.deadline)) ? "" : day > 0 ? day + "일 지났습니다." : -day + "일 남았습니다."}
                 <Modal 
                   trigger={<Button floated='right' onClick={this.clickEdit.bind(this, list)}>Edit</Button>}
                   closeIcon
                   >
                   <Modal.Header>Edit a TODO</Modal.Header>
                   <Modal.Content>
-                    <Form size="massive" onSubmit={this.handleEdit.bind(this, list)}>
+                    <Form size="massive" onSubmit={this.handleEdit.bind(this, index)}>
                       <Form.Field>
                         <label>제목</label>
                         <Form.Input placeholder='Title...' name='editTitle' value={editTitle} onChange={this.handleChange} />

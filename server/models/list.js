@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         deadline: {
-            type: DataTypes.STRING
+            type: DataTypes.DATEONLY
         },
         priority: {
             type: DataTypes.INTEGER,
