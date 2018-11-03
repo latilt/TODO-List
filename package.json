@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./server/index.js",
+    "start:linux": "NODE_ENV=development node ./server/index.js",
+    "start:window": "set NODE_ENV=development&&node ./server/index.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nodemon ./server/index.js",
     "dev:client": "npm --prefix ./client run start",
     "build": "npm --prefix ./client run build",
-    "server": "nodemon ./server/index.js"
+    "server:window": "set NODE_ENV=development&&nodemon ./server/index.js",
+    "server:linux": "NODE_ENV=development nodemon ./server/index.js"
   },
   "author": "",
   "license": "ISC",
