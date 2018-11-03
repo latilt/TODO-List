@@ -1,22 +1,11 @@
 import React, { Component } from 'react';
-import { Form, Button, List, Modal, Checkbox, Select, Message } from 'semantic-ui-react';
+import { Form, Button, List, Modal, Checkbox, Message, Select } from 'semantic-ui-react';
 import './App.css';
-/*
-const temp = [{title: "오늘의 할일", content: "내일의 할일", done: false, deadline: "2018-11-05", priority: 5},
-              {title: "title2", content: "content2", done: false, deadline: "2018-11-02", priority: 2},
-              {title: "title3", content: "content3", done: false, deadline: "2018-10-20", priority: 3}];
-
-const selectTemp = [{key: 'basic', value: 'basic', text: '기본'},
-                    {key: 'title', value: 'title', text: '제목순'},
-                    {key: 'content', value: 'content', text: '내용순'},
-                    {key: 'done', value: 'done', text: '완료순'},
-                    {key: 'deadline', value: 'deadline', text: '남은일자순'}];*/
-// 기본:만든날짜, 제목순, 내용순, 완료순, 남은일자순
 
 class App extends Component {
 
   // title : string, content : string, done : bool, deadline : date, priority: 1~5
-  state = { lists : [], title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true, select: 'basic', priority: 3, editPriority: 0}
+  state = { lists : [], title: '', content: '', editTitle: '', editContent: '', date: '', editDate: '', dateBool: true, editDateBool: true, priority: 3, editPriority: 0}
 
   priorityList = [{key: 1, value: 1, text:'1 (Lowest)'},
                   {key: 2, value: 2, text:'2 (Low)'},
@@ -59,7 +48,7 @@ class App extends Component {
       });
   }
 
-  // title, content 입력
+  // state 값 변경
   handleChange = (e, { name, value }) => {
     this.setState({ [name]: value });
   }
@@ -141,77 +130,12 @@ class App extends Component {
     gap = Math.floor(gap / (1000 * 60 * 60 * 24));
 
     return gap;
-
-    /*if(isNaN(gap)) {
-      return "";
-    }
-    if(gap > 0) {
-      return gap + "일 지났습니다.";
-    } else {
-      return -gap + "일 남았습니다.";
-    }*/
   }
 
-  // 우선순위로 정렬
-  /*sortOption = (lists) => {
-    const { select } = this.state;
-
-    switch(select) {
-      case 'basic':
-      break;
-
-      case 'title':
-        lists.sort((a, b) => {
-          let titleA = a.title.toUpperCase();
-          let titleB = b.title.toUpperCase();
-          if(titleA < titleB) return -1;
-          if(titleA > titleB) return 1;
-          return 0;
-        });
-      break;
-
-      case 'content':
-        lists.sort((a, b) => {
-          let contentA = a.content.toUpperCase();
-          let contentB = b.content.toUpperCase();
-          if(contentA < contentB) return -1;
-          if(contentA > contentB) return 1;
-          return 0;
-        });
-      break;
-
-      case 'done':
-        lists.sort((a, b) => a.done - b.done)
-      break;
-
-      case 'deadline':
-       lists.sort((a, b) => {
-         let dateA = new Date(a.deadline);
-         let dateB = new Date(b.deadline);
-         return dateA.getTime() - dateB.getTime();
-       });
-       let index = lists.findIndex((val) => {
-        let today = new Date();
-        let date = new Date(val.deadline);
-        let gap = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-        return gap <= 0 ;
-       });
-       const before = lists.slice(0, index);
-       const after = lists.slice(index, lists.length);
-       return after.concat(before);
-      break;
-    }
-    return lists;
-  }*/
-
   render() {
-    const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool, select, priority, editPriority } = this.state;
+    const { lists, title, content, editTitle, editContent, date, editDate, dateBool, editDateBool, priority, editPriority } = this.state;
     let day;
     const outDateList = lists.filter((list) => {
-      /*let today = new Date();
-      let day = new Date(list.deadline || "");
-      let gap = today.getTime() - day.getTime();
-      gap = Math.floor(gap / (1000 * 60 * 60 * 24));*/
       const gap = this.calculateDate(list.deadline);
   
       return gap > 0;
@@ -238,7 +162,6 @@ class App extends Component {
             <Form.Input disabled={dateBool} type='date' name='date' value={date} onChange={this.handleChange} />
           </Form.Field>
           <Button type='submit'>submit</Button>
-          {/* <Select options={selectTemp} name='select' value={select} onChange={this.handleChange} selection /> */}
         </Form>
 
         <List celled size="massive">
