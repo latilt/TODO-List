@@ -43,8 +43,8 @@ class App extends Component {
 
   }
   // ToDoLists 삭제
-  deleteToDoLists = () => {
-    
+  deleteToDoLists = (id) => {
+    return fetch('/api/todolists/'+id, {method: 'DELETE'});
   }
 
   // Lists 추가
@@ -70,11 +70,16 @@ class App extends Component {
   // list 삭제
   clickDelete = (index) => {
     const { lists } = this.state;
-
-    lists.splice(index, 1);
-    this.setState({
-      lists: lists
-    });
+    let id = lists[index].id;
+    this.deleteToDoLists(id)
+      .then(res => res.json())
+      .then(res => {
+        console.log(res);
+        lists.splice(index, 1);
+        this.setState({
+          lists: lists
+        });
+      })
   }
 
   // list 완료 처리
