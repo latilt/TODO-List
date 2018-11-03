@@ -38,7 +38,16 @@ class App extends Component {
   // Lists 추가
   handleSubmit = () => {
     const { lists, title, content, date, dateBool, priority } = this.state;
-    const data = {title, content, done: false, deadline: dateBool ? null : date, priority};
+    if(title.length === 0) {
+      return console.log("제목이 입력되지 않았습니다.");
+    }
+    if(content.length === 0) {
+      return console.log("내용이 입력되지 않았습니다.");
+    }
+    if(!dateBool && !date) {
+      return console.log("기한이 입력되지 않았습니다.");
+    }
+    const data = {title, content, done: false, deadline: dateBool ? null : date || null, priority};
     this.postToDoLists(data)
       .then(res => res.json())
       .then(res => {
