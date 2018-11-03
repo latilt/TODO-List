@@ -39,8 +39,8 @@ class App extends Component {
     return fetch('/api/todolists', {method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json'}});
   }
   // ToDoLists 변경
-  putToDoLists = () => {
-
+  putToDoLists = (id, data) => {
+    return fetch('/api/todolists/'+id, {method: 'PUT', body: JSON.stringify(data), headers: {'Content-Type': 'application/json'}});
   }
   // ToDoLists 삭제
   deleteToDoLists = (id) => {
@@ -75,9 +75,10 @@ class App extends Component {
       .then(res => res.json())
       .then(res => {
         console.log(res);
-        lists.splice(index, 1);
+        const newList = lists.slice();
+        newList.splice(index, 1);
         this.setState({
-          lists: lists
+          lists: newList
         });
       })
   }
@@ -85,11 +86,18 @@ class App extends Component {
   // list 완료 처리
   clickDone = (index) => {
     const { lists } = this.state;
-
-    lists[index].done ? lists[index].done = false : lists[index].done = true;
-    this.setState({
-      lists: lists
-    });
+    const id = lists[index].id;
+    const data = {done : lists[index].done ? false : true};
+    this.putToDoLists(id, data)
+      .then(res => res.json())
+      .then(res => {
+        console.log(res);
+        const newList = lists.slice();
+        newList[index].done = data.done;
+        this.setState({
+          lists: newList
+        });
+      });
   }
 
   // list 수정 버튼 클릭

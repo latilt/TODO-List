@@ -47,10 +47,19 @@ app.post('/api/todolists', (req, res) => {
         })
 })
 app.put('/api/todolists/:id', (req, res) => {
-
+    const id= req.params.id;
+    const data = req.body;
+    db.List.update(data, {where: {id}})
+    .then(result => {
+        res.json(result);
+    })
+    .catch(err => {
+        console.log(err);
+        res.json(err);
+    })
 })
 app.delete('/api/todolists/:id', (req, res) => {
-    let id = req.params.id;
+    const id = req.params.id;
     db.List.destroy({where: {id}})
         .then(result => {
             res.json(result);
