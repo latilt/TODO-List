@@ -77,7 +77,9 @@ npm run start:window
 ```
 express 서버(http://localhost:4000)가 구동됩니다.
 ## 개발 도구
+```
 create-react-app
 Nodejs - 8.11.2
 Npm - 5.6.0
 MySql - 8.0.13
+```
