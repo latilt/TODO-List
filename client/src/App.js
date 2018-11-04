@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Form, Button, List, Modal, Checkbox, Message, Select } from 'semantic-ui-react';
+import { Form, Button, List, Modal, Checkbox, Message, Select } from 'semantic-ui-react';
 import './App.css';
 
 class App extends Component {
